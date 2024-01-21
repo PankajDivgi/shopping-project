@@ -16,6 +16,8 @@ import axios from "axios";
 const HomeScreen = () => {
   const navigation = useNavigation();
   const [productData, setProductData] = useState([]);
+  const [cartDetail, setCartDetail] = useState([]);
+  const [check, setCheck] = useState(false);
 
   useEffect(() => {
     axios
@@ -27,6 +29,19 @@ const HomeScreen = () => {
       .catch((error) => console.log("productData", error));
   }, []);
 
+  const handleClick = (prod) => {
+    setCartDetail([...cartDetail, prod]);
+
+    navigation.navigate("CartScreen",{cartDetailParam: cartDetail})
+
+    let changeProductIcon = productData.filter((element2) => {
+      return element2.id === prod.id;
+    });
+    setCheck(changeProductIcon)
+    // console.log("changeProductIcon", changeProductIcon);
+  };
+  
+
   return (
     <>
       <StatusBar barStyle="light-content" />
@@ -34,7 +49,13 @@ const HomeScreen = () => {
         <View style={{ backgroundColor: "#2A4BA0" }}>
           <View style={styles.topHome}>
             <Text style={styles.userText}>Hey, Pankaj</Text>
-            <Pressable onPress={() => navigation.navigate("CartScreen")}>
+            <Pressable
+              onPress={() =>
+                navigation.navigate("CartScreen", {
+                  cartDetailParam: cartDetail,
+                })
+              }
+            >
               <Icon
                 name="shopping-bag"
                 type="font-awesome-5"
@@ -69,7 +90,14 @@ const HomeScreen = () => {
             return (
               <Pressable
                 Key={prod.id + i}
-                onPress={() => navigation.navigate("ProductDetailScreen")}
+                onPress={() =>
+                  navigation.navigate("ProductDetailScreen", {
+                    paramKey: prod,
+                    cartDetailParam: cartDetail,
+                    cartDetail: cartDetail,
+                    setCartDetail: setCartDetail
+                  })
+                }
               >
                 <View style={styles.products}>
                   <View style={styles.heart}>
@@ -77,27 +105,38 @@ const HomeScreen = () => {
                       name="heart"
                       type="foundation"
                       color="#FF8181"
-                      size={22}
+                      size={30}
                     />
                   </View>
                   <View style={styles.imageP}>
-                    <Image source={require("../../assets/no-product.png")} />
+                    <Image
+                      source={{ uri: prod.thumbnail }}
+                      width={"100%"}
+                      height={100}
+                    />
                   </View>
                   <View style={styles.addPN}>
                     <View>
                       <Text style={styles.price}>${prod.price}</Text>
                       <Text style={styles.name}>{prod.title}</Text>
                     </View>
-                    <Pressable
-                      onPress={() => navigation.navigate("CartScreen")}
-                    >
-                      <Icon
-                        name="pluscircle"
-                        type="antdesign"
+                    {/* {check ? ( */}
+                      <Pressable onPress={() => handleClick(prod)}>
+                        <Icon
+                          name="pluscircle"
+                          type="antdesign"
+                          color="#2A4BA0"
+                          size={30}
+                        />
+                      </Pressable>
+                    {/* ) : ( */}
+                      {/* <Icon
+                        name="check-circle"
+                        type="octicons"
                         color="#2A4BA0"
-                        size={22}
-                      />
-                    </Pressable>
+                        size={30}
+                      /> */}
+                    {/* )} */}
                   </View>
                 </View>
               </Pressable>
@@ -155,7 +194,7 @@ const styles = StyleSheet.create({
   products: {
     position: "relative",
     width: 160,
-    height: 194,
+    height: 240,
     borderRadius: 20,
     backgroundColor: "#F8F9FB",
     padding: 20,
@@ -166,6 +205,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 10,
     top: 10,
+    zIndex: 1,
   },
   imageP: {
     display: "flex",

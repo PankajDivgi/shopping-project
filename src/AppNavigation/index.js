@@ -6,7 +6,7 @@ import HomeScreen from "../HomeScreen";
 import ProductDetailScreen from "../ProductDetailsScreen";
 import CartScreen from "../CartScreen";
 import { Icon } from "@rneui/themed";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 
 // const Tab = createBottomTabNavigator();
 
@@ -83,15 +83,22 @@ import { View } from "react-native";
 
 const CartProduct = () => {
   return (
-    <View style={{display: "flex", marginLeft:65, width:"100%"}}>
+    <View style={{ display: "flex", marginLeft: 65, width: "100%" }}>
       <Icon name="shopping-bag" type="font-awesome-5" color="#000" size={32} />
     </View>
   );
-}
+};
 
 const RootStack = createNativeStackNavigator();
 
 const NvigateApp = () => {
+  const CartTotal = () => {
+    return (
+      <View style={{ display: "flex"}}>
+        <Text style={{ fontSize: 20}}>Shopping Cart</Text>
+      </View>
+    );
+  };
   return (
     <NavigationContainer>
       {/* <ProductProvider> */}
@@ -106,7 +113,12 @@ const NvigateApp = () => {
           component={ProductDetailScreen}
           options={{ headerTitle: (props) => <CartProduct {...props} /> }}
         />
-        <RootStack.Screen name="CartScreen" component={CartScreen} />
+        <RootStack.Screen
+          name="CartScreen"
+          component={CartScreen}
+          options={{ headerTitle: (props) => <CartTotal {...props} /> }}
+          initialParams={{ cartTotalNum: 0 }}
+        />
       </RootStack.Navigator>
       {/* </ProductProvider> */}
     </NavigationContainer>
